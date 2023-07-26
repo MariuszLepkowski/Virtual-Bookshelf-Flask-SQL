@@ -24,8 +24,8 @@ with app.app_context():
 @app.route('/')
 def home():
     result = db.session.execute(db.select(Books))
-    all_books = result.fetchall()
-    is_empty = len(all_books) == 0
+    all_books = result.scalars().all()
+    is_empty = not bool(all_books)
     return render_template('index.html', all_books=all_books, is_empty=is_empty)
 
 
@@ -37,13 +37,11 @@ def add():
         author = data['author']
         rating = data['rating']
 
-        new_book = {
-                "title": title,
-                "author": author,
-                "rating": rating
-            }
+        new_book = Books(title=title, author=author, rating=rating)
 
-        all_books.append(new_book)
+        db.session.add(new_book)
+        db.session.commit()
+
         return redirect(url_for('home'))
     return render_template('add.html')
 
