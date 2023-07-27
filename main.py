@@ -46,6 +46,12 @@ def add():
     return render_template('add.html')
 
 
+@app.route("/edit/<int:book_id>", methods=['GET', 'POST'])
+def edit_rating(book_id):
+    book = db.session.execute(db.select(Books).where(Books.id == book_id)).scalar()
+    return render_template('edit.html', book=book)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
 
