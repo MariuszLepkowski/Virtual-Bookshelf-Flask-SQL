@@ -49,6 +49,14 @@ def add():
 @app.route("/edit/<int:book_id>", methods=['GET', 'POST'])
 def edit_rating(book_id):
     book = db.session.execute(db.select(Books).where(Books.id == book_id)).scalar()
+
+    if request.method == 'POST':
+        data = request.form
+        new_rating = data['new_rating']
+        book_to_update = db.session.execute(db.select(Books).where(Books.id == book_id)).scalar()
+        book_to_update.rating = new_rating
+        db.session.commit()
+        return redirect(url_for('home'))
     return render_template('edit.html', book=book)
 
 
